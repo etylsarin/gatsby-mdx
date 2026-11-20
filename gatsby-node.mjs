@@ -117,8 +117,10 @@ export const createPages = async ({ graphql, actions, reporter }) => {
   const posts = result.data.allMdx.nodes
 
   posts.forEach(node => {
-    // Don't create a page for src/pages/chart-info.mdx since this already gets created
-    if (node.frontmatter.slug !== `/chart-info`) {
+    // Don't create a page for MDX files in src/pages (src/pages/index.mdx): Gatsby's page
+    // creator already makes one, and a second page at its slug (/index/) shares the
+    // root's page-data file, so which of the two wins depended on build order.
+    if (!node.internal.contentFilePath.startsWith(path.resolve(`./src/pages`))) {
       if (node.frontmatter.slug === `/blog-1`) {
         // For /blog-1 create a page without defining a contentFilePath and just using the layout defined in src/components/layout.jsx
         createPage({
